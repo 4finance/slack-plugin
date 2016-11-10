@@ -6,10 +6,10 @@ public class SlackNotifierStub extends SlackNotifier {
                              String sendAs, boolean startNotification, boolean notifyAborted, boolean notifyFailure,
                              boolean notifyNotBuilt, boolean notifySuccess, boolean notifyUnstable, boolean notifyBackToNormal,
                              boolean notifyRepeatedFailure, boolean includeTestSummary, CommitInfoChoice commitInfoChoice,
-                             boolean includeCustomMessage, String customMessage) {
+                             boolean includeCustomMessage, String customMessage, String username, String iconEmoji) {
         super(teamDomain, authToken, authTokenCredentialId, room, sendAs, startNotification, notifyAborted, notifyFailure,
                 notifyNotBuilt, notifySuccess, notifyUnstable, notifyBackToNormal, notifyRepeatedFailure,
-                includeTestSummary, commitInfoChoice, includeCustomMessage, customMessage);
+                includeTestSummary, commitInfoChoice, includeCustomMessage, customMessage, username, iconEmoji);
     }
 
     public static class DescriptorImplStub extends SlackNotifier.DescriptorImpl {
@@ -21,7 +21,7 @@ public class SlackNotifierStub extends SlackNotifier {
         }
 
         @Override
-        SlackService getSlackService(final String teamDomain, final String authToken, final String authTokenCredentialId, final String room) {
+        SlackService getSlackService(final String teamDomain, final String authToken, final String authTokenCredentialId, final String room, final String username, final String iconEmoji) {
             return slackService;
         }
 

@@ -33,15 +33,19 @@ public class StandardSlackService implements SlackService {
     private static final Logger logger = Logger.getLogger(StandardSlackService.class.getName());
 
     private String host = "slack.com";
+    private String iconEmoji;
+    private String username;
     private String teamDomain;
     private String token;
     private String authTokenCredentialId;
     private String[] roomIds;
 
-    public StandardSlackService(String teamDomain, String token, String authTokenCredentialId, String roomId) {
+    public StandardSlackService(String teamDomain, String token, String authTokenCredentialId, String roomId, String username, String iconEmoji) {
         super();
         this.teamDomain = teamDomain;
         this.token = token;
+        this.username = username;
+        this.iconEmoji = iconEmoji;
         this.authTokenCredentialId = StringUtils.trim(authTokenCredentialId);
         this.roomIds = roomId.split("[,; ]+");
     }
@@ -53,10 +57,9 @@ public class StandardSlackService implements SlackService {
     public boolean publish(String message, String color) {
         boolean result = true;
         for (String roomId : roomIds) {
-            String url = "https://" + teamDomain + "." + host + "/services/hooks/jenkins-ci?token=" + getTokenToUse();
-            logger.fine("Posting: to " + roomId + " on " + teamDomain + " using " + url +": " + message + " " + color);
+            logger.fine("Posting: to " + roomId + " on " + teamDomain + ": " + message + " " + color + " " + username + " " + iconEmoji);
             HttpClient client = getHttpClient();
-            PostMethod post = new PostMethod(url);
+            PostMethod post = new PostMethod(getSlackUrl());
             JSONObject json = new JSONObject();
 
             try {
@@ -80,6 +83,8 @@ public class StandardSlackService implements SlackService {
                 attachments.put(attachment);
 
                 json.put("channel", roomId);
+                json.put("username", username);
+                json.put("icon_emoji", iconEmoji);
                 json.put("attachments", attachments);
                 json.put("link_names", "1");
 
@@ -122,6 +127,11 @@ public class StandardSlackService implements SlackService {
         List<StringCredentials> credentials = CredentialsProvider.lookupCredentials(StringCredentials.class, Jenkins.getInstance(), ACL.SYSTEM, Collections.<DomainRequirement>emptyList());
         CredentialsMatcher matcher = CredentialsMatchers.withId(credentialId);
         return CredentialsMatchers.firstOrNull(credentials, matcher);
+    }
+
+    private String getSlackUrl() {
+        String url = "https://" + teamDomain + "." + host + "/services/hooks/jenkins-ci?token=" + getTokenToUse();
+        return url;
     }
 
     protected HttpClient getHttpClient() {

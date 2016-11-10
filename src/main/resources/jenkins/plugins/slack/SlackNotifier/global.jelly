@@ -24,8 +24,14 @@
     <f:entry title="Channel" help="/plugin/slack/help-globalConfig-slackRoom.html">
         <f:textbox field="room" name="slackRoom" value="${descriptor.getRoom()}" />
     </f:entry>
+    <f:entry title="Slack username" help="/plugin/slack/help-globalConfig-slackUsername.html">
+        <f:textbox field="username" name="slackUsername" value="${descriptor.getUsername()}"/>
+    </f:entry>
+    <f:entry title="Emoji icon" help="/plugin/slack/help-globalConfig-slackIconEmoji.html">
+        <f:textbox field="iconEmoji" name="slackIconEmoji" value="${descriptor.getIconEmoji()}"/>
+    </f:entry>
     <f:validateButton
         title="${%Test Connection}" progress="${%Testing...}"
-        method="testConnection" with="slackTeamDomain,slackToken,tokenCredentialId,slackRoom" />
+        method="testConnection" with="slackTeamDomain,slackToken,tokenCredentialId,slackRoom,slackUsername,slackIconEmoji" />
   </f:section>
 </j:jelly>

@@ -8,6 +8,8 @@
       <teamDomain></teamDomain>
       <token></token>
       <room></room>
+      <username></username>
+      <iconEmoji></iconEmoji>
       <startNotification>false</startNotification>
       <notifySuccess>true</notifySuccess>
       <notifyAborted>false</notifyAborted>
@@ -40,6 +42,8 @@
       <authToken></authToken>
       <buildServerUrl></buildServerUrl>
       <room></room>
+      <username></username>
+      <iconEmoji></iconEmoji>
     </jenkins.plugins.slack.SlackNotifier>
   </publishers>
   <buildWrappers/>

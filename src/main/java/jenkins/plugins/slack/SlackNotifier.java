@@ -43,6 +43,8 @@ public class SlackNotifier extends Notifier {
     private String authTokenCredentialId;
     private String room;
     private String sendAs;
+    private String iconEmoji;
+    private String username;
     private boolean startNotification;
     private boolean notifySuccess;
     private boolean notifyAborted;
@@ -80,6 +82,12 @@ public class SlackNotifier extends Notifier {
     public String getSendAs() {
         return sendAs;
     }
+
+    public String getIconEmoji() {
+        return iconEmoji;
+    }
+
+    public String getUsername() { return username; }
 
     public boolean getStartNotification() {
         return startNotification;
@@ -134,13 +142,15 @@ public class SlackNotifier extends Notifier {
                          final String sendAs, final boolean startNotification, final boolean notifyAborted, final boolean notifyFailure,
                          final boolean notifyNotBuilt, final boolean notifySuccess, final boolean notifyUnstable, final boolean notifyBackToNormal,
                          final boolean notifyRepeatedFailure, final boolean includeTestSummary, CommitInfoChoice commitInfoChoice,
-                         boolean includeCustomMessage, String customMessage) {
+                         boolean includeCustomMessage, String customMessage, String username, String iconEmoji) {
         super();
         this.teamDomain = teamDomain;
         this.authToken = authToken;
         this.authTokenCredentialId = StringUtils.trim(authTokenCredentialId);
         this.room = room;
         this.sendAs = sendAs;
+        this.iconEmoji = iconEmoji;
+        this.username = username;
         this.startNotification = startNotification;
         this.notifyAborted = notifyAborted;
         this.notifyFailure = notifyFailure;
@@ -176,6 +186,14 @@ public class SlackNotifier extends Notifier {
         if (StringUtils.isEmpty(room)) {
             room = getDescriptor().getRoom();
         }
+        String iconEmoji = this.iconEmoji;
+        if (StringUtils.isEmpty(iconEmoji)) {
+            iconEmoji = getDescriptor().getIconEmoji();
+        }
+        String username = this.username;
+        if (StringUtils.isEmpty(username)) {
+            username = getDescriptor().getUsername();
+        }
 
         EnvVars env = null;
         try {
@@ -189,7 +207,7 @@ public class SlackNotifier extends Notifier {
         authTokenCredentialId = env.expand(authTokenCredentialId);
         room = env.expand(room);
 
-        return new StandardSlackService(teamDomain, authToken, authTokenCredentialId, room);
+        return new StandardSlackService(teamDomain, authToken, authTokenCredentialId, room, username, iconEmoji);
     }
 
     @Override
@@ -218,6 +236,8 @@ public class SlackNotifier extends Notifier {
         private String token;
         private String tokenCredentialId;
         private String room;
+        private String iconEmoji;
+        private String username;
         private String sendAs;
 
         public static final CommitInfoChoice[] COMMIT_INFO_CHOICES = CommitInfoChoice.values();
@@ -245,6 +265,10 @@ public class SlackNotifier extends Notifier {
         public String getSendAs() {
             return sendAs;
         }
+
+        public String getIconEmoji() { return iconEmoji; }
+
+        public String getUsername() { return username; }
 
         @SuppressWarnings("unused")
         public ListBoxModel doFillTokenCredentialIdItems() {
@@ -277,6 +301,8 @@ public class SlackNotifier extends Notifier {
             String token = sr.getParameter("slackToken");
             String tokenCredentialId = json.getString("tokenCredentialId");
             String room = sr.getParameter("slackRoom");
+            String iconEmoji = sr.getParameter("slackIconEmoji");
+            String username = sr.getParameter("slackUsername");
             boolean startNotification = "true".equals(sr.getParameter("slackStartNotification"));
             boolean notifySuccess = "true".equals(sr.getParameter("slackNotifySuccess"));
             boolean notifyAborted = "true".equals(sr.getParameter("slackNotifyAborted"));
@@ -291,7 +317,7 @@ public class SlackNotifier extends Notifier {
             String customMessage = sr.getParameter("customMessage");
             return new SlackNotifier(teamDomain, token, room, tokenCredentialId, sendAs, startNotification, notifyAborted,
                     notifyFailure, notifyNotBuilt, notifySuccess, notifyUnstable, notifyBackToNormal, notifyRepeatedFailure,
-                    includeTestSummary, commitInfoChoice, includeCustomMessage, customMessage);
+                    includeTestSummary, commitInfoChoice, includeCustomMessage, customMessage, username, iconEmoji);
         }
 
         @Override
@@ -300,13 +326,15 @@ public class SlackNotifier extends Notifier {
             token = sr.getParameter("slackToken");
             tokenCredentialId = formData.getJSONObject("slack").getString("tokenCredentialId");
             room = sr.getParameter("slackRoom");
+            iconEmoji = sr.getParameter("slackIconEmoji");
+            username = sr.getParameter("slackUsername");
             sendAs = sr.getParameter("slackSendAs");
             save();
             return super.configure(sr, formData);
         }
 
-        SlackService getSlackService(final String teamDomain, final String authToken, final String authTokenCredentialId, final String room) {
-            return new StandardSlackService(teamDomain, authToken, authTokenCredentialId, room);
+        SlackService getSlackService(final String teamDomain, final String authToken, final String authTokenCredentialId, final String room, final String username, final String iconEmoji) {
+            return new StandardSlackService(teamDomain, authToken, authTokenCredentialId, room, username, iconEmoji);
         }
 
         @Override
@@ -317,7 +345,9 @@ public class SlackNotifier extends Notifier {
         public FormValidation doTestConnection(@QueryParameter("slackTeamDomain") final String teamDomain,
                                                @QueryParameter("slackToken") final String authToken,
                                                @QueryParameter("tokenCredentialId") final String authTokenCredentialId,
-                                               @QueryParameter("slackRoom") final String room) throws FormException {
+                                               @QueryParameter("slackRoom") final String room,
+                                               @QueryParameter("slackUsername") final String username,
+                                               @QueryParameter("slackIconEmoji") final String iconEmoji) throws FormException {
             try {
                 String targetDomain = teamDomain;
                 if (StringUtils.isEmpty(targetDomain)) {
@@ -335,7 +365,15 @@ public class SlackNotifier extends Notifier {
                 if (StringUtils.isEmpty(targetRoom)) {
                     targetRoom = this.room;
                 }
-                SlackService testSlackService = getSlackService(targetDomain, targetToken, targetTokenCredentialId, targetRoom);
+                String targetIconEmoji = iconEmoji;
+                if (StringUtils.isEmpty(targetIconEmoji)) {
+                    targetIconEmoji= this.iconEmoji;
+                }
+                String targetUsername= username;
+                if (StringUtils.isEmpty(targetUsername)) {
+                    targetUsername= this.username;
+                }
+                SlackService testSlackService = getSlackService(targetDomain, targetToken, targetTokenCredentialId, targetRoom, targetUsername, targetIconEmoji);
                 String message = "Slack/Jenkins plugin: you're all set on " + DisplayURLProvider.get().getRoot();
                 boolean success = testSlackService.publish(message, "good");
                 return success ? FormValidation.ok("Success") : FormValidation.error("Failure");
@@ -351,6 +389,8 @@ public class SlackNotifier extends Notifier {
         private String teamDomain;
         private String token;
         private String room;
+        private String iconEmoji;
+        private String username;
         private boolean startNotification;
         private boolean notifySuccess;
         private boolean notifyAborted;
@@ -379,10 +419,14 @@ public class SlackNotifier extends Notifier {
                                 boolean includeTestSummary,
                                 boolean showCommitList,
                                 boolean includeCustomMessage,
-                                String customMessage) {
+                                String customMessage,
+                                String username,
+                                String iconEmoji) {
             this.teamDomain = teamDomain;
             this.token = token;
             this.room = room;
+            this.iconEmoji = iconEmoji;
+            this.username = username;
             this.startNotification = startNotification;
             this.notifyAborted = notifyAborted;
             this.notifyFailure = notifyFailure;
@@ -411,6 +455,12 @@ public class SlackNotifier extends Notifier {
         public String getRoom() {
             return room;
         }
+
+        @Exported
+        public String getIconEmoji() {  return iconEmoji; }
+
+        @Exported
+        public String getUsername() {  return username; }
 
         @Exported
         public boolean getStartNotification() {
@@ -514,7 +564,13 @@ public class SlackNotifier extends Notifier {
                     if (StringUtils.isBlank(slackNotifier.room)) {
                         slackNotifier.room = slackJobProperty.getRoom();
                     }
-                    
+                    if (StringUtils.isBlank(slackNotifier.iconEmoji)) {
+                        slackNotifier.iconEmoji= slackJobProperty.getIconEmoji();
+                    }
+                    if (StringUtils.isBlank(slackNotifier.username)) {
+                        slackNotifier.username= slackJobProperty.getUsername();
+                    }
+
                     slackNotifier.startNotification = slackJobProperty.getStartNotification();
     
                     slackNotifier.notifyAborted = slackJobProperty.getNotifyAborted();

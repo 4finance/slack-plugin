@@ -66,8 +66,16 @@
         <f:entry title="Project Channel" help="/plugin/slack/help-projectConfig-slackRoom.html">
             <f:textbox name="slackRoom" value="${instance.getRoom()}"/>
         </f:entry>
+
+        <f:entry title="Slack username" help="/plugin/slack/help-projectConfig-slackUsername.html">
+            <f:textbox name="slackUsername" value="${instance.getUsername()}"/>
+        </f:entry>
+
+        <f:entry title="Emoji icon" help="/plugin/slack/help-projectConfig-slackIconEmoji.html">
+            <f:textbox name="slackIconEmoji" value="${instance.getIconEmoji()}"/>
+        </f:entry>
         <f:validateButton
                 title="${%Test Connection}" progress="${%Testing...}"
-                method="testConnection" with="slackTeamDomain,slackToken,tokenCredentialId,slackRoom"/>
+                method="testConnection" with="slackTeamDomain,slackToken,tokenCredentialId,slackRoom,slackUsername,slackIconEmoji"/>
     </f:advanced>
 </j:jelly>

@@ -40,6 +40,8 @@ public class SlackSendStep extends AbstractStepImpl {
     private String token;
     private String tokenCredentialId;
     private String channel;
+    private String iconEmoji;
+    private String username;
     private String teamDomain;
     private boolean failOnError;
 
@@ -75,6 +77,20 @@ public class SlackSendStep extends AbstractStepImpl {
     public void setTokenCredentialId(String tokenCredentialId) {
         this.tokenCredentialId = Util.fixEmpty(tokenCredentialId);
     }
+
+    public String getIconEmoji() {
+        return iconEmoji;
+    }
+
+    @DataBoundSetter
+    public void setIconEmoji(String iconEmoji) {
+        this.iconEmoji= Util.fixEmpty(iconEmoji);
+    }
+
+    public String getUsername() { return username; }
+
+    @DataBoundSetter
+    public void setUsername(String username) { this.username= Util.fixEmpty(username); }
 
     public String getChannel() {
         return channel;
@@ -174,11 +190,13 @@ public class SlackSendStep extends AbstractStepImpl {
             String tokenCredentialId = step.tokenCredentialId != null ? step.tokenCredentialId : slackDesc.getTokenCredentialId();
             String channel = step.channel != null ? step.channel : slackDesc.getRoom();
             String color = step.color != null ? step.color : "";
+            String iconEmoji = step.iconEmoji != null ? step.iconEmoji : slackDesc.getIconEmoji();
+            String username = step.username != null ? step.username : slackDesc.getUsername();
 
             //placing in console log to simplify testing of retrieving values from global config or from step field; also used for tests
-            listener.getLogger().println(Messages.SlackSendStepConfig(step.teamDomain == null, step.token == null, step.channel == null, step.color == null));
+            listener.getLogger().println(Messages.SlackSendStepConfig(step.teamDomain == null, step.token == null, step.channel == null, step.color == null, username == null, iconEmoji == null ));
 
-            SlackService slackService = getSlackService(team, token, tokenCredentialId, channel);
+            SlackService slackService = getSlackService(team, token, tokenCredentialId, channel, username, iconEmoji);
             boolean publishSuccess = slackService.publish(step.message, color);
             if (!publishSuccess && step.failOnError) {
                 throw new AbortException(Messages.NotificationFailed());
@@ -189,8 +207,8 @@ public class SlackSendStep extends AbstractStepImpl {
         }
 
         //streamline unit testing
-        SlackService getSlackService(String team, String token, String tokenCredentialId, String channel) {
-            return new StandardSlackService(team, token, tokenCredentialId, channel);
+        SlackService getSlackService(String team, String token, String tokenCredentialId, String channel, String username, String iconEmoji) {
+            return new StandardSlackService(team, token, tokenCredentialId, channel, username, iconEmoji);
         }
     }
 }

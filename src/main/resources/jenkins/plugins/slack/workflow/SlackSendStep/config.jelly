@@ -20,6 +20,12 @@
         <f:entry field="teamDomain" title="Team Domain">
             <f:textbox />
         </f:entry>
+        <f:entry field="username" title="Slack username">
+            <f:textbox />
+        </f:entry>
+        <f:entry field="iconEmoji" title="Emoji icon">
+            <f:textbox />
+        </f:entry>
         <f:entry field="failOnError">
             <f:checkbox title="Fail On Error" default="false"/>
         </f:entry>

@@ -23,6 +23,8 @@ public class SlackSendStepIntegrationTest {
         step1.setToken("token");
         step1.setTokenCredentialId("tokenCredentialId");
         step1.setTeamDomain("teamDomain");
+        step1.setUsername("slackUser");
+        step1.setIconEmoji(":iconEmoji:");
         step1.setFailOnError(true);
 
         SlackSendStep step2 = new StepConfigTester(jenkinsRule).configRoundTrip(step1);
@@ -33,17 +35,17 @@ public class SlackSendStepIntegrationTest {
     public void test_global_config_override() throws Exception {
         WorkflowJob job = jenkinsRule.jenkins.createProject(WorkflowJob.class, "workflow");
         //just define message
-        job.setDefinition(new CpsFlowDefinition("slackSend(message: 'message', teamDomain: 'teamDomain', token: 'token', tokenCredentialId: 'tokenCredentialId', channel: '#channel', color: 'good');", true));
+        job.setDefinition(new CpsFlowDefinition("slackSend(message: 'message', teamDomain: 'teamDomain', token: 'token', tokenCredentialId: 'tokenCredentialId', channel: '#channel', color: 'good', username: 'slackUser', iconEmoji: ':iconEmoji:');", true));
         WorkflowRun run = jenkinsRule.assertBuildStatusSuccess(job.scheduleBuild2(0).get());
         //everything should come from step configuration
-        jenkinsRule.assertLogContains(Messages.SlackSendStepConfig(false, false, false, false), run);
+        jenkinsRule.assertLogContains(Messages.SlackSendStepConfig(false, false, false, false, false, false), run);
     }
 
     @Test
     public void test_fail_on_error() throws Exception {
         WorkflowJob job = jenkinsRule.jenkins.createProject(WorkflowJob.class, "workflow");
         //just define message
-        job.setDefinition(new CpsFlowDefinition("slackSend(message: 'message', teamDomain: 'teamDomain', token: 'token', tokenCredentialId: 'tokenCredentialId', channel: '#channel', color: 'good', failOnError: true);", true));
+        job.setDefinition(new CpsFlowDefinition("slackSend(message: 'message', teamDomain: 'teamDomain', token: 'token', tokenCredentialId: 'tokenCredentialId', channel: '#channel', color: 'good', username: 'slackUser', iconEmoji: ':iconEmoji:', failOnError: true);", true));
         WorkflowRun run = jenkinsRule.assertBuildStatus(Result.FAILURE, job.scheduleBuild2(0).get());
         //everything should come from step configuration
         jenkinsRule.assertLogContains(Messages.NotificationFailed(), run);

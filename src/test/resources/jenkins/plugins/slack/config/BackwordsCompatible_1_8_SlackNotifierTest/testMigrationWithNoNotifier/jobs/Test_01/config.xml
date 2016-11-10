@@ -8,6 +8,8 @@
       <teamDomain></teamDomain>
       <token></token>
       <room></room>
+      <username></username>
+      <iconEmoji></iconEmoji>
       <startNotification>false</startNotification>
       <notifySuccess>false</notifySuccess>
       <notifyAborted>false</notifyAborted>

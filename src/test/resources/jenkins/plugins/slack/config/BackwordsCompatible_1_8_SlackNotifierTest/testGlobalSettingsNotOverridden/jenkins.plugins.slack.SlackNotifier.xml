@@ -3,5 +3,7 @@
   <teamDomain>jenkins-slack-plugin-global</teamDomain>
   <token>auth-token-for-test-global</token>
   <room>#slack-plugin-testing-global</room>
+  <username>slackUser</username>
+  <iconEmoji>:iconEmoji:</iconEmoji>
   <buildServerUrl>http://localhost:8080/global/</buildServerUrl>
 </jenkins.plugins.slack.SlackNotifier_-DescriptorImpl>
