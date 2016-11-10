@@ -130,7 +130,8 @@ public class StandardSlackService implements SlackService {
     }
 
     private String getSlackUrl() {
-        String url = "https://" + teamDomain + "." + host + "/services/hooks/jenkins-ci?token=" + getTokenToUse();
+        //String url = "https://" + teamDomain + "." + host + "/services/hooks/jenkins-ci?token=" + getTokenToUse();
+        String url = getTokenToUse();
         return url;
     }
 
