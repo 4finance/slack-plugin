@@ -43,8 +43,6 @@ public class SlackNotifier extends Notifier {
     private String authTokenCredentialId;
     private String room;
     private String sendAs;
-    private String iconEmoji;
-    private String username;
     private boolean startNotification;
     private boolean notifySuccess;
     private boolean notifyAborted;
@@ -57,6 +55,8 @@ public class SlackNotifier extends Notifier {
     private CommitInfoChoice commitInfoChoice;
     private boolean includeCustomMessage;
     private String customMessage;
+    private String iconEmoji;
+    private String username;
 
     @Override
     public DescriptorImpl getDescriptor() {
@@ -87,7 +87,9 @@ public class SlackNotifier extends Notifier {
         return iconEmoji;
     }
 
-    public String getUsername() { return username; }
+    public String getUsername() {
+        return username;
+    }
 
     public boolean getStartNotification() {
         return startNotification;
@@ -148,9 +150,6 @@ public class SlackNotifier extends Notifier {
         this.authToken = authToken;
         this.authTokenCredentialId = StringUtils.trim(authTokenCredentialId);
         this.room = room;
-        this.sendAs = sendAs;
-        this.iconEmoji = iconEmoji;
-        this.username = username;
         this.startNotification = startNotification;
         this.notifyAborted = notifyAborted;
         this.notifyFailure = notifyFailure;
@@ -163,6 +162,8 @@ public class SlackNotifier extends Notifier {
         this.commitInfoChoice = commitInfoChoice;
         this.includeCustomMessage = includeCustomMessage;
         this.customMessage = customMessage;
+        this.iconEmoji = iconEmoji;
+        this.username = username;
     }
 
     public BuildStepMonitor getRequiredMonitorService() {
@@ -266,9 +267,13 @@ public class SlackNotifier extends Notifier {
             return sendAs;
         }
 
-        public String getIconEmoji() { return iconEmoji; }
+        public String getIconEmoji() {
+            return iconEmoji;
+        }
 
-        public String getUsername() { return username; }
+        public String getUsername() {
+            return username;
+        }
 
         @SuppressWarnings("unused")
         public ListBoxModel doFillTokenCredentialIdItems() {
@@ -367,11 +372,11 @@ public class SlackNotifier extends Notifier {
                 }
                 String targetIconEmoji = iconEmoji;
                 if (StringUtils.isEmpty(targetIconEmoji)) {
-                    targetIconEmoji= this.iconEmoji;
+                    targetIconEmoji = this.iconEmoji;
                 }
-                String targetUsername= username;
+                String targetUsername = username;
                 if (StringUtils.isEmpty(targetUsername)) {
-                    targetUsername= this.username;
+                    targetUsername = this.username;
                 }
                 SlackService testSlackService = getSlackService(targetDomain, targetToken, targetTokenCredentialId, targetRoom, targetUsername, targetIconEmoji);
                 String message = "Slack/Jenkins plugin: you're all set on " + DisplayURLProvider.get().getRoot();
@@ -457,10 +462,14 @@ public class SlackNotifier extends Notifier {
         }
 
         @Exported
-        public String getIconEmoji() {  return iconEmoji; }
+        public String getIconEmoji() {
+            return iconEmoji;
+        }
 
         @Exported
-        public String getUsername() {  return username; }
+        public String getUsername() {
+            return username;
+        }
 
         @Exported
         public boolean getStartNotification() {
@@ -529,7 +538,8 @@ public class SlackNotifier extends Notifier {
 
     }
 
-    @Extension(ordinal = 100) public static final class Migrator extends ItemListener {
+    @Extension(ordinal = 100)
+    public static final class Migrator extends ItemListener {
         @SuppressWarnings("deprecation")
         @Override
         public void onLoaded() {
@@ -547,7 +557,7 @@ public class SlackNotifier extends Notifier {
                 }
 
                 SlackNotifier slackNotifier = p.getPublishersList().get(SlackNotifier.class);
-                
+
                 if (slackNotifier == null) {
                     logger.info(String
                             .format("Configuration does not have a notifier for \"%s\", not migrating settings",
@@ -565,14 +575,14 @@ public class SlackNotifier extends Notifier {
                         slackNotifier.room = slackJobProperty.getRoom();
                     }
                     if (StringUtils.isBlank(slackNotifier.iconEmoji)) {
-                        slackNotifier.iconEmoji= slackJobProperty.getIconEmoji();
+                        slackNotifier.iconEmoji = slackJobProperty.getIconEmoji();
                     }
                     if (StringUtils.isBlank(slackNotifier.username)) {
-                        slackNotifier.username= slackJobProperty.getUsername();
+                        slackNotifier.username = slackJobProperty.getUsername();
                     }
 
                     slackNotifier.startNotification = slackJobProperty.getStartNotification();
-    
+
                     slackNotifier.notifyAborted = slackJobProperty.getNotifyAborted();
                     slackNotifier.notifyFailure = slackJobProperty.getNotifyFailure();
                     slackNotifier.notifyNotBuilt = slackJobProperty.getNotifyNotBuilt();
@@ -580,7 +590,7 @@ public class SlackNotifier extends Notifier {
                     slackNotifier.notifyUnstable = slackJobProperty.getNotifyUnstable();
                     slackNotifier.notifyBackToNormal = slackJobProperty.getNotifyBackToNormal();
                     slackNotifier.notifyRepeatedFailure = slackJobProperty.getNotifyRepeatedFailure();
-    
+
                     slackNotifier.includeTestSummary = slackJobProperty.includeTestSummary();
                     slackNotifier.commitInfoChoice = slackJobProperty.getShowCommitList() ? CommitInfoChoice.AUTHORS_AND_TITLES : CommitInfoChoice.NONE;
                     slackNotifier.includeCustomMessage = slackJobProperty.includeCustomMessage();

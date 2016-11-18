@@ -35,7 +35,9 @@ import static com.cloudbees.plugins.credentials.CredentialsProvider.lookupCreden
  */
 public class SlackSendStep extends AbstractStepImpl {
 
-    private final @Nonnull String message;
+    private final
+    @Nonnull
+    String message;
     private String color;
     private String token;
     private String tokenCredentialId;
@@ -84,13 +86,17 @@ public class SlackSendStep extends AbstractStepImpl {
 
     @DataBoundSetter
     public void setIconEmoji(String iconEmoji) {
-        this.iconEmoji= Util.fixEmpty(iconEmoji);
+        this.iconEmoji = Util.fixEmpty(iconEmoji);
     }
 
-    public String getUsername() { return username; }
+    public String getUsername() {
+        return username;
+    }
 
     @DataBoundSetter
-    public void setUsername(String username) { this.username= Util.fixEmpty(username); }
+    public void setUsername(String username) {
+        this.username = Util.fixEmpty(username);
+    }
 
     public String getChannel() {
         return channel;
@@ -194,7 +200,7 @@ public class SlackSendStep extends AbstractStepImpl {
             String username = step.username != null ? step.username : slackDesc.getUsername();
 
             //placing in console log to simplify testing of retrieving values from global config or from step field; also used for tests
-            listener.getLogger().println(Messages.SlackSendStepConfig(step.teamDomain == null, step.token == null, step.channel == null, step.color == null, username == null, iconEmoji == null ));
+            listener.getLogger().println(Messages.SlackSendStepConfig(step.teamDomain == null, step.token == null, step.channel == null, step.color == null, username == null, iconEmoji == null));
 
             SlackService slackService = getSlackService(team, token, tokenCredentialId, channel, username, iconEmoji);
             boolean publishSuccess = slackService.publish(step.message, color);

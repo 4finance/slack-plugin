@@ -92,11 +92,10 @@ public class StandardSlackService implements SlackService {
                 post.getParams().setContentCharset("UTF-8");
                 int responseCode = client.executeMethod(post);
                 String response = post.getResponseBodyAsString();
-                if(responseCode != HttpStatus.SC_OK) {
+                if (responseCode != HttpStatus.SC_OK) {
                     logger.log(Level.WARNING, "Slack post may have failed. Response: " + response);
                     result = false;
-                }
-                else {
+                } else {
                     logger.fine("Posting succeeded");
                 }
             } catch (Exception e) {
@@ -130,8 +129,7 @@ public class StandardSlackService implements SlackService {
     }
 
     private String getSlackUrl() {
-        //String url = "https://" + teamDomain + "." + host + "/services/hooks/jenkins-ci?token=" + getTokenToUse();
-        String url = getTokenToUse();
+        String url = String.format("https://%s.%s/services/hooks/jenkins-ci?token=%s", teamDomain, host, getTokenToUse());
         return url;
     }
 
@@ -150,7 +148,7 @@ public class StandardSlackService implements SlackService {
                     // and
                     // http://svn.apache.org/viewvc/httpcomponents/oac.hc3x/trunk/src/examples/BasicAuthenticationExample.java?view=markup
                     client.getState().setProxyCredentials(AuthScope.ANY,
-                        new UsernamePasswordCredentials(username, password));
+                            new UsernamePasswordCredentials(username, password));
                 }
             }
         }
